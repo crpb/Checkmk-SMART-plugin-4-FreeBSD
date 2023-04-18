@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Bash3 Boilerplate. Copyright (c) 2014, kvz.io
+
+set -o errexit
+set -o pipefail
+set -o nounset
+############### end of Boilerplate
+
+# Print report header
+echo '<<<smart>>>'
+
+for drive in /dev/ada?
+do
+    # collect SMART results
+    report=$(smartctl -a "$drive")
+    ### echo "$report" | grep "Device Model"| sed s/^[/w]*//
+
+    # Extract 2 field Device ID, serial number, manufacturer
+    device_id=$(echo "$report" | grep "Device Model" | sed 's/Device Model:[ ]*//;s/_/ /')
+    #mfg=$(echo "$device_id" | awk '{print $1}')
+    serial=$(echo "$report" | grep "Serial Number:" | awk '{print $3}')
+    #echo "device_id $device_id"
+    #echo "mfg $mfg serial $serial"
+
+    # build a tag (first field in the output)
+    tag=$(echo "${device_id} ${serial}"|tr ' ' '_')
+    #echo "                  tag $tag"
+
+    # full device ID, first three fields in the output
+    full_device_id="$tag $device_id"
+    #echo "full_device_id $full_device_id"
+
+    # Extract the statistics from the full report
+    stats=$(echo "$report"|grep -E '^[ 12][ 0-9][0-9]')
+    #echo $stats
+    #echo
+    #echo $report
+
+    # Print out the stats, inserting the full device ID at the start of each line
+    # ref: https://unix.stackexchange.com/questions/9784/how-can-i-read-line-by-line-from-a-variable-in-bash
+    while IFS= read -r line
+    do
+        echo "$line"
+    done < <(printf '%s\n' "$stats"|sed s/^/"$full_device_id "/)
+    #echo
+done
+
+
