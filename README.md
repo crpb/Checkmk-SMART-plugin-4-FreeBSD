@@ -48,6 +48,7 @@ TOSHIBA_HDWE160_DD56419883897 TOSHIBA HDWE160 223 Load_Retry_Count        0x0032
 TOSHIBA_HDWE160_DD56419883897 TOSHIBA HDWE160 224 Load_Friction           0x0022   100   100   000    Old_age   Always       -       0
 TOSHIBA_HDWE160_DD56419883897 TOSHIBA HDWE160 226 Load-in_Time            0x0026   100   100   000    Old_age   Always       -       542
 hbarta@piserver:~ $ 
+```
 
 This appears to consist of the following fields:
 
