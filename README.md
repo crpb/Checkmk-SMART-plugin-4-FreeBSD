@@ -69,6 +69,14 @@ crw-r-----  1 root  operator  0x6d Apr 17 13:38 /dev/ada4
 [hbarta@mesquite ~]$ 
 ```
 
+## Deploy & test
+
+```text
+sudo cp smart /usr/local/lib/check_mk_agent/plugins
+sudo /usr/local/lib/check_mk_agent/plugins/smart
+sudo check_mk_agent
+```
+
 ## Errata
 
 It may be necessary to enable SMART reporting by e.g. `smartctl -s on /dev/adaN`. This is rarely needed on Linux but seems to be frequently needed on FreeBSD.
