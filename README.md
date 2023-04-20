@@ -80,3 +80,6 @@ sudo check_mk_agent
 ## Errata
 
 It may be necessary to enable SMART reporting by e.g. `smartctl -s on /dev/adaN`. This is rarely needed on Linux but seems to be frequently needed on FreeBSD.
+
+Checkmk has indicated an interest in this script. Please see further discussion at <https://forum.checkmk.com/t/a-better-smart-plugin-for-freebsd/38289/3>
+
