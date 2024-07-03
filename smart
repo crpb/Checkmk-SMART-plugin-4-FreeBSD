@@ -16,9 +16,11 @@ do
     ### echo "$report" | grep "Device Model"| sed s/^[/w]*//
 
     # Extract 2 field Device ID, serial number, manufacturer
-    device_id=$(echo "$report" | grep "Device Model" | sed 's/Device Model:[ ]*//;s/_/ /')
+    #device_id=$(echo "$report" | awk "Device Model" | sed 's/Device Model:[ ]*//;s/_/ /')
+    device_id=$(awk '/^(Device Model|Product).*/ {print $NF}' <<< $report)
     #mfg=$(echo "$device_id" | awk '{print $1}')
-    serial=$(echo "$report" | grep "Serial Number:" | awk '{print $3}')
+    #serial=$(echo "$report" | grep "Serial Number:" | awk '{print $3}')
+    serial=$(awk '/^Serial( |Number).*/ {print $NF}' <<< $report)
     #echo "device_id $device_id"
     #echo "mfg $mfg serial $serial"
 
