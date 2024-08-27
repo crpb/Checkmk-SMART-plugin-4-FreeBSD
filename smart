@@ -1,50 +1,34 @@
 #!/usr/bin/env bash
 # Bash3 Boilerplate. Copyright (c) 2014, kvz.io
-
-#set -o errexit
-#set -o pipefail
-#set -o nounset
-############### end of Boilerplate
+# Copyright (c) 2023, HankB
+# Copyright (c) 2024 Christopher Bock <christopher@bocki.com>
 
 # Print report header
 echo '<<<smart>>>'
 
-for drive in $(sysctl -n kern.disks)
-do
+for drive in $(sysctl -n kern.disks); do
     # collect SMART results
-    report=$(smartctl -a /dev/${drive})
-    ### echo "$report" | grep "Device Model"| sed s/^[/w]*//
+    report=$(smartctl -a /dev/"${drive}")
 
     # Extract 2 field Device ID, serial number, manufacturer
-    #device_id=$(echo "$report" | awk "Device Model" | sed 's/Device Model:[ ]*//;s/_/ /')
-    device_id=$(awk '/^(Device Model|Product).*/ {print $NF}' <<< $report)
-    #mfg=$(echo "$device_id" | awk '{print $1}')
-    #serial=$(echo "$report" | grep "Serial Number:" | awk '{print $3}')
-    serial=$(awk '/^Serial( |Number).*/ {print $NF}' <<< $report)
-    #echo "device_id $device_id"
-    #echo "mfg $mfg serial $serial"
+    device_id=$(awk '/^(Device Model|Product).*/ {print $NF}' <<< "$report")
+    serial=$(awk '/^Serial( |Number).*/ {print $NF}' <<< "$report")
 
     # build a tag (first field in the output)
-    tag=$(echo "${device_id} ${serial}"|tr ' ' '_')
-    #echo "                  tag $tag"
+    tag=$(tr ' ' '_' <<< "$device_id $serial")
 
     # full device ID, first three fields in the output
     full_device_id="$tag $device_id"
-    #echo "full_device_id $full_device_id"
 
     # Extract the statistics from the full report
-    stats=$(echo "$report"|grep -E '^[ 12][ 0-9][0-9]')
-    #echo $stats
-    #echo
-    #echo $report
+    stats=$(grep -E '^[ 12][ 0-9][0-9]' <<< "$report")
+    # TODO Sillly Seagate/Hitachi
+    # rep -E 'Vendor:|Product|odel|Serial|Version|Revision|Transport|atabase|Unknown|ogged|eallocated|Spin_Retry|Read_Error|Celsius|Temperature|read:|write:|verify:| [12345]  Short| [12345]  Background'
 
     # Print out the stats, inserting the full device ID at the start of each line
     # ref: https://unix.stackexchange.com/questions/9784/how-can-i-read-line-by-line-from-a-variable-in-bash
-    while IFS= read -r line
-    do
-        echo "$line"
-    done < <(printf '%s\n' "$stats"|sed s/^/"$full_device_id "/)
-    #echo
+    while IFS= read -r line; do
+        echo "$full_device_id $line"
+    done < <(printf '%s\n' "$stats")
 done
-
-
+# vim:ft=sh ts=4 sts=4 sw=4 et
